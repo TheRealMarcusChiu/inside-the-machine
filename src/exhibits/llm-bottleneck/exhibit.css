@@ -1,0 +1,779 @@
+/* LLM bottleneck explorer. Self-contained: every class is prefixed llm- so this room
+   needs nothing from other exhibits' stylesheets. Chart hues validated for CVD on the
+   dark surface: decode #b88a22 (circle), prefill #4d97e0 (square). */
+
+.llm-exhibit {
+  --llm-decode: #b88a22;
+  --llm-prefill: #4d97e0;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+
+.llm-header {
+  max-width: 56rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+
+.llm-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5.5vw, 3.6rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.llm-header__subtitle {
+  margin: 0.75rem 0 1.5rem;
+  color: var(--ink-muted);
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  font-style: italic;
+}
+
+.llm-disclaimer {
+  margin: 0 0 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-left: 4px solid var(--brass);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.llm-header__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 1.5rem;
+}
+
+.llm-header__controls .hint {
+  max-width: 28rem;
+  margin: 0;
+}
+
+.llm-header__legend {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 1rem;
+}
+
+.llm-header__legend p {
+  margin: 0 0 0.75rem;
+  line-height: 2;
+}
+
+.llm-copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ── Layout and table of contents ───────────────────────────────────── */
+
+.llm-layout {
+  display: grid;
+  gap: 2rem;
+}
+
+.llm-toc {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+
+.llm-toc__title {
+  margin: 0 0 0.5rem;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.llm-toc ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: toc;
+}
+
+.llm-toc li {
+  counter-increment: toc;
+}
+
+.llm-toc a {
+  display: block;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.75rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.llm-toc a::before {
+  content: counter(toc) ' ';
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 0.8em;
+}
+
+.llm-toc a:hover {
+  color: var(--ink);
+}
+
+@media (min-width: 70rem) {
+  .llm-layout {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 3.5rem;
+  }
+
+  .llm-toc {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+  }
+
+  .llm-toc ol {
+    flex-direction: column;
+  }
+}
+
+.llm-body {
+  min-width: 0;
+}
+
+/* ── Sections and prose ─────────────────────────────────────────────── */
+
+.llm-section {
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 5rem;
+}
+
+.llm-section:last-child {
+  border-bottom: 0;
+}
+
+.llm-section > h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 400;
+  scroll-margin-top: 5.5rem;
+}
+
+.llm-section > p,
+.llm-section > ol,
+.llm-section > ul {
+  max-width: var(--measure);
+}
+
+.llm-lede {
+  font-size: 1.15rem;
+}
+
+.llm-callout {
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--explain);
+  background: var(--explain-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.llm-deep {
+  max-width: var(--measure);
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 2px solid var(--brass);
+}
+
+.llm-deep__label {
+  margin: 0 0 -0.25rem;
+  color: var(--brass);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.llm-steps {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.4rem;
+}
+
+/* ── Explorer controls ─────────────────────────────────────────────── */
+
+.llm-explorer {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 60rem) {
+  .llm-explorer {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .llm-estimate {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+.llm-controls {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.llm-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.llm-group > legend,
+.llm-precision > legend {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.llm-precision {
+  margin-top: 0.9rem;
+}
+
+.llm-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.llm-preset {
+  min-height: 2.75rem;
+  font-size: 0.85rem;
+}
+
+.llm-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.5rem), 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.llm-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 0.3rem;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+}
+
+.llm-field label {
+  color: var(--ink-muted);
+}
+
+.llm-field__row {
+  display: flex;
+  min-width: 0;
+  align-items: stretch;
+  gap: 0.3rem;
+}
+
+.llm-field input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 1rem;
+}
+
+.llm-field input:focus-visible,
+.llm-field__step:focus-visible,
+.llm-preset:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.llm-field--invalid input {
+  border-color: var(--danger);
+  border-width: 2px;
+}
+
+.llm-field__step {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--mono);
+}
+
+.llm-field__error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.82rem;
+}
+
+.llm-field__error::before {
+  content: '✕ ';
+}
+
+.llm-warning {
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--danger);
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 0.88rem;
+}
+
+/* ── Estimate panel ─────────────────────────────────────────────────── */
+
+.llm-estimate {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-0);
+  font-family: var(--sans);
+}
+
+.llm-estimate__title {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.llm-verdict {
+  margin: 0 0 0.9rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+
+.llm-verdict--memory {
+  border: 1px solid var(--explain);
+}
+
+.llm-verdict--memory strong::before {
+  content: '⇣ ';
+}
+
+.llm-verdict--compute {
+  border: 1px dashed var(--brass);
+}
+
+.llm-verdict--compute strong::before {
+  content: '⚙ ';
+}
+
+.llm-dl {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.llm-dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.15rem 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.llm-dl dt {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+.llm-dl dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+}
+
+.llm-dl__headline dd {
+  color: var(--brass);
+  font-size: 1.1rem;
+}
+
+/* ── Roofline chart ─────────────────────────────────────────────────── */
+
+.llm-chart__scroll {
+  overflow-x: auto;
+}
+
+.llm-chart__scroll:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.llm-chart__svg {
+  display: block;
+  width: 100%;
+  min-width: 34rem;
+  height: auto;
+  font-family: var(--sans);
+}
+
+.llm-chart__grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.llm-chart__tick {
+  fill: var(--ink-faint);
+  font-size: 12px;
+}
+
+.llm-chart__axis {
+  fill: var(--ink-muted);
+  font-size: 13px;
+}
+
+.llm-chart__zone {
+  fill: var(--explain-soft);
+}
+
+.llm-chart__zone-label {
+  fill: var(--ink-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.llm-chart__ridge {
+  stroke: var(--ink-faint);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.llm-chart__ridge-label {
+  fill: var(--ink-muted);
+  font-size: 12px;
+}
+
+.llm-chart__roof {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.llm-chart__hit {
+  fill: transparent;
+}
+
+.llm-chart__mark {
+  stroke: var(--surface-1);
+  stroke-width: 2;
+}
+
+.llm-chart__point.is-active .llm-chart__mark {
+  stroke: var(--ink);
+}
+
+.llm-chart__label {
+  fill: var(--ink);
+  font-size: 13px;
+}
+
+.llm-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+}
+
+.llm-legend__mark {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.3rem;
+  vertical-align: -0.05rem;
+}
+
+.llm-legend__mark--decode {
+  border-radius: 50%;
+  background: var(--llm-decode);
+}
+
+.llm-legend__mark--prefill {
+  border-radius: 2px;
+  background: var(--llm-prefill);
+}
+
+.llm-legend__mark--roof {
+  width: 1.2rem;
+  height: 2px;
+  vertical-align: 0.2rem;
+  background: var(--ink);
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────── */
+
+.llm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+}
+
+.llm-table caption {
+  padding-bottom: 0.4rem;
+  color: var(--ink-muted);
+  text-align: left;
+}
+
+.llm-table th,
+.llm-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.llm-table td {
+  font-family: var(--mono);
+}
+
+.llm-table tr[aria-current='true'] {
+  background: var(--brass-soft);
+}
+
+.llm-table tr[aria-current='true'] th::after {
+  content: ' ◂ current';
+  color: var(--brass);
+  font-size: 0.8em;
+}
+
+/* ── Step budget bars ───────────────────────────────────────────────── */
+
+.llm-budget {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.llm-budget__label {
+  margin: 0.5rem 0 0;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+
+.llm-bar {
+  display: flex;
+  gap: 2px;
+  height: 2rem;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--surface-0);
+}
+
+.llm-bar--thin {
+  height: 0.9rem;
+}
+
+.llm-bar__seg {
+  display: flex;
+  align-items: center;
+  padding-left: 0.4rem;
+  overflow: hidden;
+  color: var(--surface-0);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: width 0.3s var(--ease);
+}
+
+.llm-bar__seg--weights {
+  background: var(--ink-muted);
+}
+
+.llm-bar__seg--kv {
+  background: repeating-linear-gradient(45deg, var(--explain) 0 6px, #6f9cc4 6px 12px);
+}
+
+.llm-bar__seg--time {
+  background: var(--ink-faint);
+  border-radius: 0 4px 4px 0;
+}
+
+.llm-bar__seg--time.is-bottleneck {
+  background: var(--brass);
+}
+
+.llm-timebars {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+}
+
+/* ── Replay ─────────────────────────────────────────────────────────── */
+
+.llm-replay__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 9rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.llm-replay__bar {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  font-family: var(--mono);
+  text-align: center;
+}
+
+.llm-replay__bar span {
+  display: block;
+  border-radius: 4px 4px 0 0;
+  background: var(--llm-decode);
+  transition:
+    height 0.3s var(--ease),
+    opacity 0.3s var(--ease);
+}
+
+.llm-replay__bar.is-future span {
+  opacity: 0.25;
+}
+
+.llm-replay__bar.is-current span {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.llm-replay__bar small {
+  margin-top: 0.25rem;
+  color: var(--ink-faint);
+  font-size: 0.7rem;
+}
+
+.llm-replay__status {
+  min-height: 4.5em;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+}
+
+.llm-replay__count {
+  display: block;
+  color: var(--brass);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Challenges ─────────────────────────────────────────────────────── */
+
+.llm-challenges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+}
+
+.llm-challenge {
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+
+.llm-challenge h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+}
+
+.llm-challenge.is-solved {
+  border: 2px solid var(--ok);
+}
+
+.llm-challenge__verdict {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  font-family: var(--sans);
+  font-size: 0.92rem;
+}
+
+.llm-challenge.is-solved .llm-challenge__verdict strong {
+  color: var(--ok);
+}
+
+.llm-spoiler {
+  margin-bottom: 0.9rem;
+}
+
+.llm-spoiler summary {
+  min-height: 2.25rem;
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* ── Reference sections ─────────────────────────────────────────────── */
+
+.llm-reference-list,
+.llm-source-list {
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 1.2rem;
+  font-size: 1rem;
+}
+
+.llm-source-list a {
+  color: var(--brass);
+}
+
+/* Reduced motion: no width/height transitions (the global rule also applies). */
+html[data-motion='reduce'] .llm-bar__seg,
+html[data-motion='reduce'] .llm-replay__bar span {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .llm-bar__seg,
+  .llm-replay__bar span {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .llm-bar__seg,
+  .llm-replay__bar span,
+  .llm-legend__mark {
+    forced-color-adjust: none;
+    border: 1px solid CanvasText;
+  }
+}
