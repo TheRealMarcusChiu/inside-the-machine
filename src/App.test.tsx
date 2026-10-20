@@ -52,6 +52,21 @@ describe('museum shell', () => {
     expect(await screen.findByRole('heading', { level: 1, name: /logic gates/i })).toBeInTheDocument();
   });
 
+  it('routes to the tiny transformer exhibit from the gallery', async () => {
+    window.location.hash = '#/';
+    render(<App />);
+    const gallery = screen.getByRole('region', { name: /gallery/i });
+    expect(within(gallery).getByRole('link', { name: /tiny transformer/i })).toHaveAttribute(
+      'href',
+      '#/exhibits/tiny-transformer',
+    );
+    await act(async () => {
+      window.location.hash = '#/exhibits/tiny-transformer';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(await screen.findByRole('heading', { level: 1, name: /scaled dot-product attention/i })).toBeInTheDocument();
+  });
+
   it('offers a motion preference control that cycles and reports its state', async () => {
     const user = userEvent.setup();
     render(<App />);

@@ -45,6 +45,17 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
     summary: 'Tokens, syntax trees and code generation for a tiny language targeting a toy machine.',
     topics: ['Parsing', 'Code generation'],
   },
+  {
+    status: 'open',
+    slug: 'tiny-transformer',
+    number: 5,
+    title: 'Tiny transformer: scaled dot-product attention',
+    subtitle: 'How each word decides which other words to listen to',
+    summary:
+      'Step through real attention on three tokens: queries meet keys, scores pass through softmax, and the weights blend the values.',
+    topics: ['Attention', 'Dot products', 'Softmax'],
+    load: () => import('./tiny-transformer/TinyTransformerExhibit'),
+  },
 ];
 
 export function getOpenExhibits(): OpenExhibit[] {

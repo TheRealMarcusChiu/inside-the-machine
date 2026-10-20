@@ -10,9 +10,9 @@ describe('exhibit registry', () => {
     expect(new Set(numbers).size).toBe(numbers.length);
   });
 
-  it('opens the complete exhibits: logic gates → adder → CPU, then the memory hierarchy', () => {
+  it('opens the complete exhibits: logic gates → adder → CPU, the memory hierarchy, then the tiny transformer', () => {
     const open = getOpenExhibits();
-    expect(open.map((e) => e.slug)).toEqual(['logic-to-cpu', 'memory-hierarchy']);
+    expect(open.map((e) => e.slug)).toEqual(['logic-to-cpu', 'memory-hierarchy', 'tiny-transformer']);
     for (const e of open) expect(typeof e.load).toBe('function');
   });
 
