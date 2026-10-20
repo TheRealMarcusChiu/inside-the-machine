@@ -10,24 +10,26 @@ describe('exhibit registry', () => {
     expect(new Set(numbers).size).toBe(numbers.length);
   });
 
-  it('opens the complete exhibits: logic gates → adder → CPU, the memory hierarchy, the tiny transformer, CPU vs GPU, the web request journey, the ZFS topology explorer, then the LLM bottleneck explorer', () => {
-    const open = getOpenExhibits();
-    expect(open.map((e) => e.slug)).toEqual([
-      'logic-to-cpu',
-      'memory-hierarchy',
-      'tiny-transformer',
-      'cpu-vs-gpu',
-      'web-request',
-      'zfs-topology',
-      'llm-bottleneck',
+  it('opens exactly the seven complete exhibits, in gallery order, as Rooms 1–7', () => {
+    expect(EXHIBITS.map((e) => [e.number, e.slug, e.status])).toEqual([
+      [1, 'logic-to-cpu', 'open'],
+      [2, 'memory-hierarchy', 'open'],
+      [3, 'cpu-vs-gpu', 'open'],
+      [4, 'tiny-transformer', 'open'],
+      [5, 'llm-bottleneck', 'open'],
+      [6, 'web-request', 'open'],
+      [7, 'zfs-topology', 'open'],
     ]);
+    const open = getOpenExhibits();
+    expect(open).toHaveLength(7);
     for (const e of open) expect(typeof e.load).toBe('function');
   });
 
-  it('planned exhibits carry no page loader (no placeholder routes)', () => {
-    const planned = getPlannedExhibits();
-    expect(planned.length).toBeGreaterThan(0);
-    for (const e of planned) expect('load' in e).toBe(false);
+  it('has no planned (unbuilt) exhibits left in the gallery', () => {
+    expect(getPlannedExhibits()).toEqual([]);
+    const slugs = EXHIBITS.map((e) => e.slug);
+    expect(slugs).not.toContain('floating-point');
+    expect(slugs).not.toContain('compilers');
   });
 
   it('lists exhibits in gallery order', () => {

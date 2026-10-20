@@ -22,13 +22,25 @@ describe('museum shell', () => {
     expect(window.location.hash).toBe('#/');
   });
 
-  it('links the open exhibit and lists planned exhibits without links', () => {
+  it('lists exactly the seven open rooms, numbered 1–7 in order, with no planned section', () => {
+    window.location.hash = '#/';
     render(<App />);
     const gallery = screen.getByRole('region', { name: /gallery/i });
-    expect(within(gallery).getByRole('link', { name: /logic gates/i })).toHaveAttribute('href', '#/exhibits/logic-to-cpu');
-    const planned = screen.getByRole('list', { name: /in preparation/i });
-    expect(within(planned).queryAllByRole('link')).toHaveLength(0);
-    expect(within(planned).getAllByRole('listitem').length).toBeGreaterThan(0);
+    const cards = within(gallery).getAllByRole('heading', { level: 3 }).map((h) => {
+      const link = within(h).getByRole('link');
+      return [h.previousElementSibling?.textContent, link.getAttribute('href')];
+    });
+    expect(cards).toEqual([
+      ['Room 1 · Open', '#/exhibits/logic-to-cpu'],
+      ['Room 2 · Open', '#/exhibits/memory-hierarchy'],
+      ['Room 3 · Open', '#/exhibits/cpu-vs-gpu'],
+      ['Room 4 · Open', '#/exhibits/tiny-transformer'],
+      ['Room 5 · Open', '#/exhibits/llm-bottleneck'],
+      ['Room 6 · Open', '#/exhibits/web-request'],
+      ['Room 7 · Open', '#/exhibits/zfs-topology'],
+    ]);
+    expect(screen.queryByRole('list', { name: /in preparation/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/in preparation/i)).not.toBeInTheDocument();
   });
 
   it('explains the simulation vs. explanation legend on the home page', () => {
@@ -37,7 +49,7 @@ describe('museum shell', () => {
     expect(screen.getAllByText(/explanatory animation/i).length).toBeGreaterThan(0);
   });
 
-  it('shows a not-found page for planned or unknown exhibit URLs', async () => {
+  it('shows a not-found page for retired or unknown exhibit URLs', async () => {
     window.location.hash = '#/exhibits/floating-point';
     render(<App />);
     expect(await screen.findByRole('heading', { name: /not on display/i })).toBeInTheDocument();

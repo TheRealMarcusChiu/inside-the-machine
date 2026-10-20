@@ -2,8 +2,9 @@ import type { ExhibitEntry, OpenExhibit, PlannedExhibit } from './types';
 
 /**
  * The single source of truth for the museum's galleries.
- * To add an exhibit: build it under src/exhibits/<slug>/, then flip its entry
- * from "planned" to "open" and add a `load` import. See README → "Adding an exhibit".
+ * All seven rooms are open, numbered 1–7 in gallery order. To add an exhibit:
+ * build it under src/exhibits/<slug>/, then add an "open" entry with a `load`
+ * import (or a "planned" entry, which has no route). See README → "Adding an exhibit".
  */
 export const EXHIBITS: readonly ExhibitEntry[] = [
   {
@@ -28,38 +29,9 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
     load: () => import('./memory-hierarchy/MemoryHierarchyExhibit'),
   },
   {
-    status: 'planned',
-    slug: 'floating-point',
-    number: 3,
-    title: 'How floating point approximates the reals',
-    subtitle: 'Where 0.1 + 0.2 goes astray',
-    summary: 'IEEE 754 bit layouts, rounding, and the gaps between representable numbers.',
-    topics: ['IEEE 754', 'Rounding', 'Precision'],
-  },
-  {
-    status: 'planned',
-    slug: 'compilers',
-    number: 4,
-    title: 'From source text to machine code',
-    subtitle: 'What a compiler actually does',
-    summary: 'Tokens, syntax trees and code generation for a tiny language targeting a toy machine.',
-    topics: ['Parsing', 'Code generation'],
-  },
-  {
-    status: 'open',
-    slug: 'tiny-transformer',
-    number: 5,
-    title: 'Tiny transformer: scaled dot-product attention',
-    subtitle: 'How each word decides which other words to listen to',
-    summary:
-      'Step through real attention on three tokens: queries meet keys, scores pass through softmax, and the weights blend the values.',
-    topics: ['Attention', 'Dot products', 'Softmax'],
-    load: () => import('./tiny-transformer/TinyTransformerExhibit'),
-  },
-  {
     status: 'open',
     slug: 'cpu-vs-gpu',
-    number: 6,
+    number: 3,
     title: 'CPU SIMD vs GPU SIMT',
     subtitle: 'Two ways to do the same thing to many numbers at once',
     summary:
@@ -69,8 +41,30 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
   },
   {
     status: 'open',
+    slug: 'tiny-transformer',
+    number: 4,
+    title: 'Tiny transformer: scaled dot-product attention',
+    subtitle: 'How each word decides which other words to listen to',
+    summary:
+      'Step through real attention on three tokens: queries meet keys, scores pass through softmax, and the weights blend the values.',
+    topics: ['Attention', 'Dot products', 'Softmax'],
+    load: () => import('./tiny-transformer/TinyTransformerExhibit'),
+  },
+  {
+    status: 'open',
+    slug: 'llm-bottleneck',
+    number: 5,
+    title: 'The LLM bottleneck explorer',
+    subtitle: 'Compute versus memory bandwidth in LLM inference',
+    summary:
+      'Size the weights and KV cache, place prefill and decode on a Roofline, and see when generation waits on memory rather than arithmetic.',
+    topics: ['LLM inference', 'Roofline', 'KV cache', 'Memory bandwidth'],
+    load: () => import('./llm-bottleneck/LlmBottleneckExhibit'),
+  },
+  {
+    status: 'open',
     slug: 'web-request',
-    number: 7,
+    number: 6,
     title: 'The journey of a web request',
     subtitle: 'From a URL in your browser to a row in a database, and back again',
     summary:
@@ -81,24 +75,13 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
   {
     status: 'open',
     slug: 'zfs-topology',
-    number: 8,
+    number: 7,
     title: 'ZFS pool topology explorer',
     subtitle: 'Mirrors, RAIDZ and top-level vdevs',
     summary:
       'Build a pool from mirrors or RAIDZ vdevs, compare raw and usable capacity, and trace which disk failures the pool survives.',
     topics: ['ZFS', 'RAIDZ', 'Mirrors', 'Redundancy'],
     load: () => import('./zfs-topology/ZfsTopologyExhibit'),
-  },
-  {
-    status: 'open',
-    slug: 'llm-bottleneck',
-    number: 9,
-    title: 'The LLM bottleneck explorer',
-    subtitle: 'Compute versus memory bandwidth in LLM inference',
-    summary:
-      'Size the weights and KV cache, place prefill and decode on a Roofline, and see when generation waits on memory rather than arithmetic.',
-    topics: ['LLM inference', 'Roofline', 'KV cache', 'Memory bandwidth'],
-    load: () => import('./llm-bottleneck/LlmBottleneckExhibit'),
   },
 ];
 

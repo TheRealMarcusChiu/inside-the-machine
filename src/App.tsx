@@ -108,21 +108,25 @@ function Home() {
           ))}
         </ol>
 
-        <h3 id="planned-title" className="gallery__planned-title">
-          In preparation
-        </h3>
-        <p className="gallery__planned-note">
-          These rooms are being built. They will open only when every simulation in them is complete.
-        </p>
-        <ul className="gallery__planned" aria-labelledby="planned-title">
-          {planned.map((exhibit) => (
-            <li key={exhibit.slug}>
-              <span className="planned__room">Room {exhibit.number}</span>
-              <span className="planned__title">{exhibit.title}</span>
-              <span className="planned__subtitle">{exhibit.subtitle}</span>
-            </li>
-          ))}
-        </ul>
+        {planned.length > 0 && (
+          <>
+            <h3 id="planned-title" className="gallery__planned-title">
+              In preparation
+            </h3>
+            <p className="gallery__planned-note">
+              These rooms are being built. They will open only when every simulation in them is complete.
+            </p>
+            <ul className="gallery__planned" aria-labelledby="planned-title">
+              {planned.map((exhibit) => (
+                <li key={exhibit.slug}>
+                  <span className="planned__room">Room {exhibit.number}</span>
+                  <span className="planned__title">{exhibit.title}</span>
+                  <span className="planned__subtitle">{exhibit.subtitle}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </section>
     </article>
   );
