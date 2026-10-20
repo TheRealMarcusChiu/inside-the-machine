@@ -82,6 +82,21 @@ describe('museum shell', () => {
     expect(await screen.findByRole('heading', { level: 1, name: /cpu simd vs gpu simt/i })).toBeInTheDocument();
   });
 
+  it('routes to the web request exhibit from the gallery', async () => {
+    window.location.hash = '#/';
+    render(<App />);
+    const gallery = screen.getByRole('region', { name: /gallery/i });
+    expect(within(gallery).getByRole('link', { name: /journey of a web request/i })).toHaveAttribute(
+      'href',
+      '#/exhibits/web-request',
+    );
+    await act(async () => {
+      window.location.hash = '#/exhibits/web-request';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(await screen.findByRole('heading', { level: 1, name: /journey of a web request/i })).toBeInTheDocument();
+  });
+
   it('offers a motion preference control that cycles and reports its state', async () => {
     const user = userEvent.setup();
     render(<App />);

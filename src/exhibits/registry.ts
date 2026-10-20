@@ -67,6 +67,17 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
     topics: ['Parallelism', 'SIMD', 'SIMT'],
     load: () => import('./cpu-vs-gpu/CpuVsGpuExhibit'),
   },
+  {
+    status: 'open',
+    slug: 'web-request',
+    number: 7,
+    title: 'The journey of a web request',
+    subtitle: 'From a URL in your browser to a row in a database, and back again',
+    summary:
+      'Follow one HTTPS API call through DNS, TCP/TLS or QUIC, HTTP, a Spring controller, caches and the database, and see which steps caching and connection reuse remove.',
+    topics: ['DNS', 'TLS', 'HTTP', 'Caching'],
+    load: () => import('./web-request/WebRequestExhibit'),
+  },
 ];
 
 export function getOpenExhibits(): OpenExhibit[] {
