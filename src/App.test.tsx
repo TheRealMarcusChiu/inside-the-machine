@@ -38,7 +38,7 @@ describe('museum shell', () => {
   });
 
   it('shows a not-found page for planned or unknown exhibit URLs', async () => {
-    window.location.hash = '#/exhibits/memory-hierarchy';
+    window.location.hash = '#/exhibits/floating-point';
     render(<App />);
     expect(await screen.findByRole('heading', { name: /not on display/i })).toBeInTheDocument();
   });

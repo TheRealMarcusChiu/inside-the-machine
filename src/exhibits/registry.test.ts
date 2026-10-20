@@ -10,10 +10,10 @@ describe('exhibit registry', () => {
     expect(new Set(numbers).size).toBe(numbers.length);
   });
 
-  it('opens exactly one complete exhibit: logic gates → adder → CPU', () => {
+  it('opens the complete exhibits: logic gates → adder → CPU, then the memory hierarchy', () => {
     const open = getOpenExhibits();
-    expect(open.map((e) => e.slug)).toEqual(['logic-to-cpu']);
-    expect(typeof open[0]?.load).toBe('function');
+    expect(open.map((e) => e.slug)).toEqual(['logic-to-cpu', 'memory-hierarchy']);
+    for (const e of open) expect(typeof e.load).toBe('function');
   });
 
   it('planned exhibits carry no page loader (no placeholder routes)', () => {
@@ -27,8 +27,10 @@ describe('exhibit registry', () => {
     expect(numbers).toEqual([...numbers].sort((a, b) => a - b));
   });
 
-  it('lazy-loads the open exhibit module', async () => {
-    const mod = await getOpenExhibits()[0]!.load();
-    expect(typeof mod.default).toBe('function');
+  it('lazy-loads each open exhibit module', async () => {
+    for (const e of getOpenExhibits()) {
+      const mod = await e.load();
+      expect(typeof mod.default).toBe('function');
+    }
   });
 });

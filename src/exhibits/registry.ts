@@ -18,13 +18,14 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
     load: () => import('./logic-to-cpu/LogicToCpuExhibit'),
   },
   {
-    status: 'planned',
+    status: 'open',
     slug: 'memory-hierarchy',
     number: 2,
     title: 'Memory hierarchy and caches',
     subtitle: 'Why the nearest byte is the fastest',
     summary: 'Registers, caches and main memory, with a cache simulator driven by real access patterns.',
     topics: ['Locality', 'Cache lines', 'Latency'],
+    load: () => import('./memory-hierarchy/MemoryHierarchyExhibit'),
   },
   {
     status: 'planned',
