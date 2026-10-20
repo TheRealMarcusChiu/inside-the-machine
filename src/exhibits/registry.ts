@@ -89,6 +89,17 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
     topics: ['ZFS', 'RAIDZ', 'Mirrors', 'Redundancy'],
     load: () => import('./zfs-topology/ZfsTopologyExhibit'),
   },
+  {
+    status: 'open',
+    slug: 'llm-bottleneck',
+    number: 9,
+    title: 'The LLM bottleneck explorer',
+    subtitle: 'Compute versus memory bandwidth in LLM inference',
+    summary:
+      'Size the weights and KV cache, place prefill and decode on a Roofline, and see when generation waits on memory rather than arithmetic.',
+    topics: ['LLM inference', 'Roofline', 'KV cache', 'Memory bandwidth'],
+    load: () => import('./llm-bottleneck/LlmBottleneckExhibit'),
+  },
 ];
 
 export function getOpenExhibits(): OpenExhibit[] {

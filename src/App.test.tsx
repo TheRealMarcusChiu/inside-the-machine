@@ -112,6 +112,21 @@ describe('museum shell', () => {
     expect(await screen.findByRole('heading', { level: 1, name: /zfs pool topology explorer/i })).toBeInTheDocument();
   });
 
+  it('routes to the LLM bottleneck exhibit from the gallery', async () => {
+    window.location.hash = '#/';
+    render(<App />);
+    const gallery = screen.getByRole('region', { name: /gallery/i });
+    expect(within(gallery).getByRole('link', { name: /llm bottleneck explorer/i })).toHaveAttribute(
+      'href',
+      '#/exhibits/llm-bottleneck',
+    );
+    await act(async () => {
+      window.location.hash = '#/exhibits/llm-bottleneck';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(await screen.findByRole('heading', { level: 1, name: /llm bottleneck explorer/i })).toBeInTheDocument();
+  });
+
   it('offers a motion preference control that cycles and reports its state', async () => {
     const user = userEvent.setup();
     render(<App />);
