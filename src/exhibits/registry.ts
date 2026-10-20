@@ -56,6 +56,17 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
     topics: ['Attention', 'Dot products', 'Softmax'],
     load: () => import('./tiny-transformer/TinyTransformerExhibit'),
   },
+  {
+    status: 'open',
+    slug: 'cpu-vs-gpu',
+    number: 6,
+    title: 'CPU SIMD vs GPU SIMT',
+    subtitle: 'Two ways to do the same thing to many numbers at once',
+    summary:
+      'Run the same additions on CPU vector lanes and on GPU threads side by side, then compare how each machine spreads the work.',
+    topics: ['Parallelism', 'SIMD', 'SIMT'],
+    load: () => import('./cpu-vs-gpu/CpuVsGpuExhibit'),
+  },
 ];
 
 export function getOpenExhibits(): OpenExhibit[] {
