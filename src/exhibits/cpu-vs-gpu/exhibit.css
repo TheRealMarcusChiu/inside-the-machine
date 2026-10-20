@@ -1,0 +1,458 @@
+/* CPU SIMD vs GPU SIMT. Loaded with the exhibit's own chunk, so the page frame is declared here too. */
+
+/* ── Page frame ─────────────────────────────────────────────────────── */
+
+.exhibit-header {
+  max-width: 56rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+
+.exhibit-header h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.exhibit-header__subtitle {
+  margin: 0.75rem 0 1.75rem;
+  color: var(--ink-muted);
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  font-style: italic;
+}
+
+.exhibit-header__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 1.5rem;
+}
+
+.exhibit-header__controls .hint {
+  max-width: 28rem;
+  margin: 0;
+}
+
+.exhibit-header__legend {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 1rem;
+}
+
+.exhibit-header__legend p {
+  margin: 0 0 0.75rem;
+  line-height: 2;
+}
+
+.copy-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.exhibit-layout {
+  display: grid;
+  gap: 2rem;
+}
+
+.toc {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+
+.toc__title {
+  margin: 0 0 0.5rem;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.toc ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: toc;
+}
+
+.toc li {
+  counter-increment: toc;
+}
+
+.toc a {
+  display: block;
+  padding: 0.3rem 0.75rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.toc a::before {
+  content: counter(toc) ' ';
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 0.8em;
+}
+
+.toc a:hover {
+  color: var(--ink);
+}
+
+@media (min-width: 70rem) {
+  .exhibit-layout {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 3.5rem;
+  }
+
+  .toc {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+  }
+
+  .toc ol {
+    flex-direction: column;
+    border-left: 1px solid var(--line);
+  }
+}
+
+.exhibit-body {
+  min-width: 0;
+}
+
+.exhibit-section {
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 5rem;
+}
+
+.exhibit-section:last-child {
+  border-bottom: 0;
+}
+
+.exhibit-section > h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+  font-weight: 400;
+  scroll-margin-top: 5.5rem;
+}
+
+.exhibit-section > p,
+.exhibit-section > ol,
+.exhibit-section > ul {
+  max-width: var(--measure);
+}
+
+.lede {
+  font-size: 1.2rem;
+}
+
+.deep {
+  max-width: var(--measure);
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 2px solid var(--brass);
+}
+
+.deep__label {
+  margin: 0 0 -0.25rem;
+  color: var(--brass);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Trace lab ──────────────────────────────────────────────────────── */
+
+.workload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1.5rem;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-0);
+}
+
+.workload > legend {
+  padding: 0 0.4rem;
+  color: var(--ink-faint);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.workload__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.workload__check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--brass);
+}
+
+.field--range input {
+  width: 7rem;
+}
+
+.field__value {
+  min-width: 2.5rem;
+  font-family: var(--mono);
+  color: var(--ink-muted);
+}
+
+.trace-lab__callout {
+  max-width: var(--measure);
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.9rem;
+  border-left: 3px solid var(--danger);
+  background: var(--surface-0);
+  font-size: 1rem;
+}
+
+.trace-lab__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.trace-lab__toolbar kbd {
+  margin-left: 0.25rem;
+  padding: 0 0.3rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+.trace-lab__status {
+  margin: 0.75rem 0 1rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--ink-muted);
+}
+
+.trace-lab__units {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+}
+
+.trace-lab__legend {
+  margin: 1rem 0 0;
+}
+
+.unit {
+  padding: 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+
+.unit__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.unit__shape {
+  color: var(--ink-faint);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.unit__groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lane-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 0;
+  padding: 4px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  list-style: none;
+  transition: border-color 0.2s var(--ease);
+}
+
+.lane-group--current {
+  border-style: solid;
+  border-color: var(--brass);
+}
+
+.lane {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--ink-muted);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.lane__path {
+  font-size: 0.65rem;
+  opacity: 0.75;
+}
+
+.lane--active {
+  border-color: var(--brass);
+  background: var(--brass);
+  color: var(--brass-ink);
+}
+
+.lane--masked {
+  background: repeating-linear-gradient(135deg, var(--surface-2) 0 4px, var(--surface-3) 4px 8px);
+  color: var(--ink-faint);
+}
+
+.lane--stalled {
+  border-style: dotted;
+  border-color: var(--explain);
+  color: var(--explain);
+}
+
+.lane--done {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.lane--done .lane__path::after {
+  content: ' ✓';
+}
+
+.unit__now {
+  min-height: 3em;
+  margin: 0.75rem 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.unit__meter {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--surface-0);
+}
+
+.unit__meter span {
+  display: block;
+  height: 100%;
+  background: var(--brass);
+  transition: width 0.3s var(--ease);
+}
+
+.unit__cycles {
+  margin: 0.5rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.trace-lab--still .lane,
+.trace-lab--still .lane-group,
+.trace-lab--still .unit__meter span {
+  transition: none;
+}
+
+/* ── Worked example, challenge, references ──────────────────────────── */
+
+.worked-steps {
+  display: grid;
+  gap: 0.35rem;
+  padding-left: 1.4rem;
+}
+
+.challenge-card {
+  max-width: 44rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  transition: border-color 0.3s var(--ease);
+}
+
+.challenge-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+}
+
+.challenge-card.is-solved {
+  border-color: var(--ok);
+}
+
+.challenge-card__attempt {
+  color: var(--ink-muted);
+  font-size: 1rem;
+}
+
+.challenge-card__verdict {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  font-family: var(--sans);
+  font-size: 0.92rem;
+}
+
+.challenge-card.is-solved .challenge-card__verdict {
+  color: var(--ok);
+}
+
+.spoiler summary {
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.reference-list,
+.source-list {
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 1.2rem;
+  font-size: 1rem;
+}
+
+.reference-list strong {
+  color: var(--ink);
+}
+
+.source-list li::marker {
+  color: var(--brass);
+}
+
+.source-list cite {
+  font-style: italic;
+}
