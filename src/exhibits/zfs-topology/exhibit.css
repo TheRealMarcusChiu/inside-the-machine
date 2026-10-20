@@ -1,0 +1,752 @@
+/* ZFS pool topology explorer. Loaded with the exhibit's own chunk; every rule is scoped under .zfs so it cannot
+   collide with other rooms' stylesheets. */
+
+/* ── Page frame (same rhythm as the other rooms) ────────────────────── */
+
+.zfs .exhibit-header {
+  max-width: 56rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+
+.zfs .exhibit-header h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.zfs .exhibit-header__subtitle {
+  margin: 0.75rem 0 1.75rem;
+  color: var(--ink-muted);
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  font-style: italic;
+}
+
+.zfs .exhibit-header__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 1.5rem;
+}
+
+.zfs .exhibit-header__controls .hint {
+  max-width: 28rem;
+  margin: 0;
+}
+
+.zfs .exhibit-header__legend {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 1rem;
+}
+
+.zfs .exhibit-header__legend p {
+  margin: 0 0 0.75rem;
+  line-height: 2;
+}
+
+.zfs .copy-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.zfs .exhibit-layout {
+  display: grid;
+  gap: 2rem;
+}
+
+.zfs .toc {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+
+.zfs .toc__title {
+  margin: 0 0 0.5rem;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.zfs .toc ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: toc;
+}
+
+.zfs .toc li {
+  counter-increment: toc;
+}
+
+.zfs .toc a {
+  display: block;
+  padding: 0.3rem 0.75rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.zfs .toc a::before {
+  content: counter(toc) ' ';
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 0.8em;
+}
+
+.zfs .toc a:hover {
+  color: var(--ink);
+}
+
+@media (min-width: 70rem) {
+  .zfs .exhibit-layout {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 3.5rem;
+  }
+
+  .zfs .toc {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+  }
+
+  .zfs .toc ol {
+    flex-direction: column;
+    border-left: 1px solid var(--line);
+  }
+}
+
+.zfs .exhibit-body {
+  min-width: 0;
+}
+
+.zfs .exhibit-section {
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 5rem;
+}
+
+.zfs .exhibit-section:last-child {
+  border-bottom: 0;
+}
+
+.zfs .exhibit-section > h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+  font-weight: 400;
+  scroll-margin-top: 5.5rem;
+}
+
+.zfs .exhibit-section > p,
+.zfs .exhibit-section > ol,
+.zfs .exhibit-section > ul {
+  max-width: var(--measure);
+}
+
+.zfs .lede {
+  font-size: 1.2rem;
+}
+
+.zfs .deep {
+  max-width: var(--measure);
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 2px solid var(--brass);
+}
+
+.zfs .deep__label {
+  margin: 0 0 -0.25rem;
+  color: var(--brass);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.zfs .reference-list,
+.zfs .source-list {
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 1.2rem;
+  font-size: 1rem;
+}
+
+.zfs .reference-list strong {
+  color: var(--ink);
+}
+
+.zfs .source-list li::marker {
+  color: var(--brass);
+}
+
+.zfs .source-list a {
+  color: var(--explain);
+  overflow-wrap: anywhere;
+}
+
+.zfs .spoiler summary {
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.zfs kbd {
+  padding: 0 0.35rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface-0);
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+/* ── Pool builder ───────────────────────────────────────────────────── */
+
+.zfs-builder {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.zfs-builder__sliders {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.zfs-slider {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+}
+
+.zfs-slider label {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.zfs-slider input {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  width: 100%;
+  min-height: 2.25rem; /* comfortable touch target */
+  accent-color: var(--brass);
+}
+
+.zfs-slider__value {
+  font-family: var(--mono);
+  color: var(--brass);
+}
+
+.zfs-builder__summary {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+}
+
+.zfs-command {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  color: var(--ink-muted);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.zfs-capacity {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.zfs-capacity__item {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+}
+
+.zfs-capacity__item dt {
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.zfs-capacity__item dd {
+  margin: 0;
+}
+
+.zfs-capacity__item dd:nth-of-type(1) {
+  font-family: var(--mono);
+  font-size: 1.6rem;
+}
+
+.zfs-capacity__item--usable {
+  border-color: var(--brass);
+}
+
+.zfs-capacity__item--usable dd:nth-of-type(1) {
+  color: var(--brass);
+}
+
+.zfs-capacity__item--free {
+  border-style: dashed;
+}
+
+.zfs-capacity__item--free dd:nth-of-type(1) {
+  color: var(--ink-faint);
+  font-size: 1.2rem;
+}
+
+.zfs-capacity__note {
+  color: var(--ink-faint);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+}
+
+.zfs-bar {
+  display: flex;
+  overflow: hidden;
+  height: 2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.zfs-bar > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: width 0.3s var(--ease);
+}
+
+.zfs-bar__usable {
+  background: var(--brass);
+  color: var(--brass-ink);
+}
+
+.zfs-bar__redundancy {
+  /* Hatched, so the split reads without colour. */
+  background: repeating-linear-gradient(45deg, var(--surface-3) 0 6px, var(--surface-2) 6px 12px);
+  color: var(--ink-muted);
+}
+
+.zfs-disclaimer {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--explain);
+  background: var(--explain-soft);
+  font-family: var(--sans);
+  font-size: 0.88rem;
+}
+
+/* ── Resiliency ─────────────────────────────────────────────────────── */
+
+.zfs-resiliency {
+  display: grid;
+  gap: 0.5rem;
+  max-width: var(--measure);
+  padding: 0;
+  list-style: none;
+}
+
+.zfs-resiliency__item {
+  padding: 0.6rem 0.9rem 0.6rem 2.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  position: relative;
+  font-size: 1rem;
+}
+
+.zfs-resiliency__item::before {
+  position: absolute;
+  left: 0.8rem;
+  font-family: var(--mono);
+}
+
+.zfs-resiliency__item--safe::before {
+  content: '✓';
+  color: var(--ok);
+}
+
+.zfs-resiliency__item--loss::before {
+  content: '✕';
+  color: var(--danger);
+}
+
+.zfs-resiliency__item--maybe::before {
+  content: '?';
+  color: var(--brass);
+}
+
+.zfs-table {
+  width: 100%;
+  margin: 1.25rem 0;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+}
+
+.zfs-table caption {
+  padding-bottom: 0.5rem;
+  color: var(--ink-muted);
+  text-align: left;
+}
+
+.zfs-table th,
+.zfs-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.zfs-table thead th {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.zfs-table--compare {
+  min-width: 40rem;
+}
+
+.zfs-table tr.is-current {
+  background: var(--brass-soft);
+}
+
+.zfs-tag {
+  margin-left: 0.35rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--brass);
+  border-radius: 999px;
+  color: var(--brass);
+  font-size: 0.75rem;
+}
+
+.zfs-link-button {
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--explain);
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.zfs-share {
+  display: inline-block;
+  width: 5rem;
+  height: 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.zfs-share > span {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+}
+
+/* ── Failure tracer ─────────────────────────────────────────────────── */
+
+.zfs-tracer {
+  display: grid;
+  gap: 1rem;
+}
+
+.zfs-tracer__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  font-family: var(--sans);
+}
+
+.zfs-tracer__head p {
+  margin: 0;
+}
+
+.zfs-tracer__count {
+  color: var(--ink-muted);
+  font-family: var(--mono);
+}
+
+.zfs-state {
+  display: inline-block;
+  padding: 0.05rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+.zfs-state--online {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.zfs-state--degraded {
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+.zfs-state--faulted {
+  border-color: var(--danger);
+  background: rgb(242 147 122 / 0.12);
+  color: var(--danger);
+}
+
+.zfs-pool {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+}
+
+.zfs-vdev {
+  padding: 0.6rem 0.75rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  transition: border-color 0.2s var(--ease);
+}
+
+.zfs-vdev--degraded {
+  border-color: var(--brass);
+}
+
+.zfs-vdev--faulted {
+  border: 2px dashed var(--danger);
+}
+
+.zfs-vdev__title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem;
+  margin: 0 0 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.zfs-vdev__state {
+  color: var(--ink-muted);
+}
+
+.zfs-vdev--faulted .zfs-vdev__state {
+  color: var(--danger);
+}
+
+.zfs-vdev__disks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.zfs-disk {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem; /* ≥ 44px touch target */
+  min-height: 2.75rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.1;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--ease),
+    border-color 0.15s var(--ease);
+}
+
+.zfs-disk:hover {
+  border-color: var(--ink-faint);
+}
+
+.zfs-disk:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.zfs-disk__mark {
+  min-height: 1em;
+  font-size: 0.75rem;
+}
+
+.zfs-disk--failed {
+  border-color: var(--danger);
+  background: rgb(242 147 122 / 0.18);
+  color: var(--danger);
+}
+
+.zfs-disk--queued {
+  border-style: dashed;
+  border-color: var(--danger);
+  color: var(--ink-muted);
+}
+
+.zfs-narration {
+  min-height: 3em;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  font-family: var(--sans);
+  font-size: 0.92rem;
+}
+
+.zfs-narration.is-lost {
+  border: 1px solid var(--danger);
+}
+
+/* ── Parity explainer ───────────────────────────────────────────────── */
+
+.zfs-sectors {
+  display: grid;
+  gap: 3px;
+  max-width: 36rem;
+  overflow-x: auto;
+}
+
+.zfs-sectors__head {
+  color: var(--ink-muted);
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.zfs-sectors__head.is-failed {
+  color: var(--danger);
+  text-decoration: line-through;
+}
+
+.zfs-sector {
+  display: inline-grid;
+  place-items: center;
+  min-height: 1.6rem;
+  padding: 0 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  transition: background-color 0.25s var(--ease);
+}
+
+.zfs-sector--data {
+  border-color: var(--line-strong);
+  background: var(--surface-3);
+  color: var(--ink);
+}
+
+.zfs-sector--parity {
+  border-color: var(--explain);
+  background: var(--explain-soft);
+  color: var(--explain);
+  font-weight: 600;
+}
+
+.zfs-sector--skip {
+  border-style: dotted;
+  color: var(--ink-faint);
+}
+
+.zfs-sector.is-new {
+  outline: 2px solid var(--brass);
+  outline-offset: -2px;
+}
+
+.zfs-sector.is-lost {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.zfs-sectors__legend .zfs-sector {
+  min-height: 1.3rem;
+}
+
+/* ── Worked example and challenge ───────────────────────────────────── */
+
+.zfs-steps {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.4rem;
+}
+
+.zfs-challenges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.zfs-challenge {
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+
+.zfs-challenge h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+}
+
+.zfs-challenge.is-solved {
+  border-color: var(--ok);
+}
+
+.zfs-challenge__verdict {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  font-family: var(--sans);
+  font-size: 0.92rem;
+}
+
+.zfs-challenge.is-solved .zfs-challenge__verdict {
+  color: var(--ok);
+}
+
+/* ── Reduced motion: no transitions in this room either ─────────────── */
+
+html[data-motion='reduce'] .zfs *,
+html[data-motion='reduce'] .zfs *::before {
+  transition: none !important;
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='full']) .zfs * {
+    transition: none !important;
+  }
+}
