@@ -97,6 +97,21 @@ describe('museum shell', () => {
     expect(await screen.findByRole('heading', { level: 1, name: /journey of a web request/i })).toBeInTheDocument();
   });
 
+  it('routes to the ZFS topology exhibit from the gallery', async () => {
+    window.location.hash = '#/';
+    render(<App />);
+    const gallery = screen.getByRole('region', { name: /gallery/i });
+    expect(within(gallery).getByRole('link', { name: /zfs pool topology explorer/i })).toHaveAttribute(
+      'href',
+      '#/exhibits/zfs-topology',
+    );
+    await act(async () => {
+      window.location.hash = '#/exhibits/zfs-topology';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(await screen.findByRole('heading', { level: 1, name: /zfs pool topology explorer/i })).toBeInTheDocument();
+  });
+
   it('offers a motion preference control that cycles and reports its state', async () => {
     const user = userEvent.setup();
     render(<App />);

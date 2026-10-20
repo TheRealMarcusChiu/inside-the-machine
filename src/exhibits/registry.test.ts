@@ -10,7 +10,7 @@ describe('exhibit registry', () => {
     expect(new Set(numbers).size).toBe(numbers.length);
   });
 
-  it('opens the complete exhibits: logic gates → adder → CPU, the memory hierarchy, the tiny transformer, CPU vs GPU, then the web request journey', () => {
+  it('opens the complete exhibits: logic gates → adder → CPU, the memory hierarchy, the tiny transformer, CPU vs GPU, the web request journey, then the ZFS topology explorer', () => {
     const open = getOpenExhibits();
     expect(open.map((e) => e.slug)).toEqual([
       'logic-to-cpu',
@@ -18,6 +18,7 @@ describe('exhibit registry', () => {
       'tiny-transformer',
       'cpu-vs-gpu',
       'web-request',
+      'zfs-topology',
     ]);
     for (const e of open) expect(typeof e.load).toBe('function');
   });

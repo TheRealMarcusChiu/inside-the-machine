@@ -78,6 +78,17 @@ export const EXHIBITS: readonly ExhibitEntry[] = [
     topics: ['DNS', 'TLS', 'HTTP', 'Caching'],
     load: () => import('./web-request/WebRequestExhibit'),
   },
+  {
+    status: 'open',
+    slug: 'zfs-topology',
+    number: 8,
+    title: 'ZFS pool topology explorer',
+    subtitle: 'Mirrors, RAIDZ and top-level vdevs',
+    summary:
+      'Build a pool from mirrors or RAIDZ vdevs, compare raw and usable capacity, and trace which disk failures the pool survives.',
+    topics: ['ZFS', 'RAIDZ', 'Mirrors', 'Redundancy'],
+    load: () => import('./zfs-topology/ZfsTopologyExhibit'),
+  },
 ];
 
 export function getOpenExhibits(): OpenExhibit[] {
